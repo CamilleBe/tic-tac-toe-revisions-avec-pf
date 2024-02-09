@@ -14,14 +14,20 @@
  * [x] 7) Intégrer le marqueur O dans une case cliquée.
  *      - Mettre en place une alternance entre les deux marqueurs.
  * [x] 8) Bloquer une case une fois qu'un joueur a placé un marqueur.
- * [] 9) Détecter s'il y a une combinaison gagnante.
- */
+ * [x] 9) Détecter s'il y a une combinaison gagnante.
+ * [x] 10) Détecter s'il y a matchh nul.
+ * [x] 11) Compter les points.
+ * */
 
 /*7)*/
 //let marqueurJ1 = 'X';
 //let marqueurJ2 = 'O';
 let marqueur;
 let isJ1Turn = true;
+let nbCases= 0;
+let xWins = 0;
+let oWins = 0;
+let scoresP = document.querySelectorAll('p');
 
 /**
  * 1)
@@ -55,17 +61,21 @@ for (let i = 0; i < cases.length; i++) {
             if (isJ1Turn === true) {
                 //this.textContent = "X";
                 //this.textContent = marqueurJ1;
+                //this.textContent = marqueur;
                 marqueur = 'X';
                 isJ1Turn = false;
 
             } else {
                 //this.textContent = "O";
                 //this.textContent = marqueurJ2;
+                //this.textContent = marqueur;
                 marqueur = "O";
                 isJ1Turn = true;
             }
 
+            //on déplace cette ligne dans le if global afin d'optimiser le code
             this.textContent = marqueur;
+            nbCases++;
 
         } else {
             alert('case non dispo');
@@ -73,6 +83,31 @@ for (let i = 0; i < cases.length; i++) {
 
         if (winner(marqueur)) {
             alert(`le joueur ${marqueur} a gagné !`);
+
+            //Incrémentation du score du gagnant
+            switch (marqueur) {
+                case 'X':
+                    xWins++;
+                    scoresP[0].textContent = `Joueur X : ${xWins}`;
+                    break;
+
+                case 'O' :
+                    oWins++;
+                    scoresP[1].textContent = `Joueur 0 : ${oWins}`;
+                    break;
+            }
+
+
+            if (confirm('voulez-vous rejouez ?')) {
+                nbCases = 0;
+                resetGame();
+            } else {
+                endGame();
+            }
+
+
+        } else if(!winner(marqueur) && nbCases === 9) {
+            alert('Match nul !');
         }
 
     });
@@ -91,9 +126,33 @@ for (let i = 0; i < cases.length; i++) {
 // 9)
 function winner(marqueur) {
     // si notre marqueur est présent sur la première ligne du plateau, alors on a un gagnant
-    if (cases[0].textContent === marqueur && cases[1].textContent === marqueur && cases[2].textContent === marqueur) {
+    if (cases[0].textContent === marqueur && cases[1].textContent === marqueur && cases[2].textContent === marqueur
+        || cases[3].textContent === marqueur && cases[4].textContent === marqueur && cases[5].textContent === marqueur
+        || cases[6].textContent === marqueur && cases[7].textContent === marqueur && cases[8].textContent === marqueur
+
+        || cases[0].textContent === marqueur && cases[3].textContent === marqueur && cases[6].textContent === marqueur
+        || cases[1].textContent === marqueur && cases[4].textContent === marqueur && cases[7].textContent === marqueur
+        || cases[2].textContent === marqueur && cases[5].textContent === marqueur && cases[8].textContent === marqueur
+
+        || cases[0].textContent === marqueur && cases[4].textContent === marqueur && cases[8].textContent === marqueur
+        || cases[2].textContent === marqueur && cases[4].textContent === marqueur && cases[6].textContent === marqueur
+
+    ) {
 
         return true;
+        alert('le joueur' + marqueur + " a gagné");
     }
     return false;
+}
+
+function resetGame() {
+    for(let i=0; i < cases.length; i++) {
+        cases[i].textContent = '';
+    }
+}
+
+function endGame() {
+    for (let i = 0; i < cases.length; i++) {
+        cases[i].style.pointerEvents = "none";
+    }
 }
